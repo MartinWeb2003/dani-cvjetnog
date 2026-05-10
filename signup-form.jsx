@@ -40,11 +40,13 @@ const TextInput = React.forwardRef(function TextInput(props, ref) {
 
 function SignupForm({ game, onClose, onSubmit }) {
   const isTeam = game.players > 1;
-  const initialPlayers = Array.from({ length: game.players }, () => ({ name: "", phone: "" }));
+  const initialPlayers = Array.from({ length: game.players }, () => ({ name: "", email: "", phone: "" }));
   const [teamName, setTeamName] = useState("");
   const [players, setPlayers] = useState(initialPlayers);
   const [agree, setAgree] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [confirmCode] = useState(() => {
     return "DC-" + Math.random().toString(36).slice(2, 6).toUpperCase() + "-" + Math.floor(Math.random()*90+10);
   });
@@ -69,12 +71,54 @@ function SignupForm({ game, onClose, onSubmit }) {
   function canSubmit() {
     if (!agree) return false;
     if (isTeam && !teamName.trim()) return false;
-    return players.every(p => p.name.trim().length > 1 && p.phone.trim().length > 5);
+    if (!players[0].email.trim().includes("@")) return false;
+    return players.every(p => p.name.trim().length > 1);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!canSubmit()) return;
+    if (!canSubmit() || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    const payload = {
+      igra:             game.name,
+      igra_id:          game.id,
+      ekipa:            teamName || null,
+      igraci:           players.map(p => p.name).filter(Boolean),
+      kontakt_email:    players[0].email,
+      kontakt_mobitel:  players[0].phone || null,
+      sifra:            confirmCode,
+      termin:           game.schedule,
+      lokacija:         game.venue,
+      timestamp:        firebase.database.ServerValue.TIMESTAMP,
+    };
+
+    try {
+      await firebase.database().ref("prijave").push(payload);
+    } catch (err) {
+      console.error("Database error:", err);
+      setSubmitError("Greška pri slanju. Pokušaj ponovo ili nas kontaktiraj na domski.cvjetno@gmail.com.");
+      setSubmitting(false);
+      return;
+    }
+
+    // Send confirmation email — non-blocking, failure doesn't cancel submission
+    const ejs = window.__EMAILJS;
+    if (ejs && ejs.serviceId !== "YOUR_SERVICE_ID") {
+      emailjs.send(ejs.serviceId, ejs.templateId, {
+        to_name:   players[0].name,
+        to_email:  players[0].email,
+        igra:      game.name,
+        sifra:     confirmCode,
+        termin:    game.schedule,
+        lokacija:  game.venue,
+        ekipa:     teamName || "",
+        igraci:    players.map(p => p.name).filter(Boolean).join(", "),
+      }).catch((err) => console.error("EmailJS error:", err));
+    }
+
+    setSubmitting(false);
     setSubmitted(true);
     onSubmit && onSubmit({ game, teamName, players, code: confirmCode });
   }
@@ -106,6 +150,8 @@ function SignupForm({ game, onClose, onSubmit }) {
           @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
           @keyframes slideIn { from { transform: translateX(40px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
           .signup-sheet input::placeholder { color: #b9b5ac; font-style: italic; }
+          @media (max-width: 600px) { .signup-form-inner { padding: 40px 24px 60px !important; } }
+          @media (max-width: 480px) { .player-row { grid-template-columns: 1fr !important; } }
         `}</style>
 
         {/* close button */}
@@ -121,7 +167,7 @@ function SignupForm({ game, onClose, onSubmit }) {
         </button>
 
         {!submitted ? (
-          <form onSubmit={handleSubmit} style={{ padding: "56px 56px 80px" }}>
+          <form onSubmit={handleSubmit} className="signup-form-inner" style={{ padding: "56px 56px 80px" }}>
             <div className="mono" style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--mute)", marginBottom: 24 }}>
               Prijava · {String(GAMES.findIndex(g => g.id === game.id) + 1).padStart(2, "0")} / {String(GAMES.length).padStart(2, "0")}
             </div>
@@ -143,7 +189,7 @@ function SignupForm({ game, onClose, onSubmit }) {
             </div>
 
             <p style={{ fontSize: 16, lineHeight: 1.5, color: "var(--mute)", margin: "0 0 36px", maxWidth: 480 }}>
-              {game.blurb} Ispuni podatke ispod — potvrdu prijave šaljemo SMS-om kapetanu ekipe.
+              {game.blurb} Ispuni podatke ispod — potvrdu prijave šaljemo na navedenu e-mail adresu.
             </p>
 
             {isTeam && (
@@ -168,26 +214,74 @@ function SignupForm({ game, onClose, onSubmit }) {
               <div key={i} style={{
                 marginBottom: 18, paddingBottom: 18,
                 borderBottom: i < players.length - 1 ? "1px dashed var(--line)" : "none",
-                display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18,
               }}>
-                <FormField label={isTeam ? `Igrač ${i + 1} · ime i prezime` : "Ime i prezime"} idx={isTeam ? i + 2 : 1}>
+                {(!isTeam && i === 0) ? (
+                  /* Solo: name + email side by side, phone below */
+                  <>
+                    <div className="player-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginBottom: 18 }}>
+                      <FormField label="Ime i prezime" idx={1}>
+                        <TextInput
+                          ref={firstInputRef}
+                          value={p.name}
+                          onChange={(e) => updatePlayer(0, "name", e.target.value)}
+                          placeholder="Ana Horvat"
+                        />
+                      </FormField>
+                      <FormField label="E-mail" idx={2}>
+                        <TextInput
+                          type="email"
+                          value={p.email}
+                          onChange={(e) => updatePlayer(0, "email", e.target.value)}
+                          placeholder="ana@primjer.hr"
+                        />
+                      </FormField>
+                    </div>
+                    <FormField label="Mobitel" hint="nije obavezno">
+                      <TextInput
+                        type="tel"
+                        value={p.phone}
+                        onChange={(e) => updatePlayer(0, "phone", e.target.value)}
+                        placeholder="+385 9_ ___ ____"
+                      />
+                    </FormField>
+                  </>
+                ) : (
+                  /* Team: name only per player */
+                  <FormField label={`Igrač ${i + 1} · ime i prezime`} idx={i + 2}>
+                    <TextInput
+                      value={p.name}
+                      onChange={(e) => updatePlayer(i, "name", e.target.value)}
+                      placeholder={i === 0 ? "Ana Horvat" : "Ime Prezime"}
+                    />
+                  </FormField>
+                )}
+              </div>
+            ))}
+
+            {/* Team contact — email + optional phone after all player names */}
+            {isTeam && (
+              <div style={{ marginTop: 8, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+                <div className="mono" style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--mute)", margin: "0 0 16px" }}>
+                  Kontakt · kapetan
+                </div>
+                <FormField label="E-mail" idx={players.length + 2}>
                   <TextInput
-                    ref={!isTeam && i === 0 ? firstInputRef : null}
-                    value={p.name}
-                    onChange={(e) => updatePlayer(i, "name", e.target.value)}
-                    placeholder={i === 0 ? "Ana Horvat" : "Ime Prezime"}
+                    type="email"
+                    value={players[0].email}
+                    onChange={(e) => updatePlayer(0, "email", e.target.value)}
+                    placeholder="ana@primjer.hr"
                   />
                 </FormField>
-                <FormField label="Mobitel" hint={i === 0 && isTeam ? "kapetan" : ""}>
+                <FormField label="Mobitel" hint="nije obavezno">
                   <TextInput
                     type="tel"
-                    value={p.phone}
-                    onChange={(e) => updatePlayer(i, "phone", e.target.value)}
+                    value={players[0].phone}
+                    onChange={(e) => updatePlayer(0, "phone", e.target.value)}
                     placeholder="+385 9_ ___ ____"
                   />
                 </FormField>
               </div>
-            ))}
+            )}
 
             <label style={{
               display: "flex", alignItems: "flex-start", gap: 12,
@@ -210,27 +304,33 @@ function SignupForm({ game, onClose, onSubmit }) {
             </label>
 
             <div style={{ display: "flex", gap: 12, marginTop: 40, alignItems: "center" }}>
-              <button type="submit" disabled={!canSubmit()}
+              <button type="submit" disabled={!canSubmit() || submitting}
                 style={{
-                  background: canSubmit() ? "var(--ink)" : "transparent",
-                  color: canSubmit() ? "var(--paper)" : "var(--mute)",
-                  border: "1px solid " + (canSubmit() ? "var(--ink)" : "var(--line)"),
+                  background: canSubmit() && !submitting ? "var(--ink)" : "transparent",
+                  color: canSubmit() && !submitting ? "var(--paper)" : "var(--mute)",
+                  border: "1px solid " + (canSubmit() && !submitting ? "var(--ink)" : "var(--line)"),
                   padding: "16px 32px",
                   fontSize: 14, letterSpacing: "0.02em",
-                  cursor: canSubmit() ? "pointer" : "not-allowed",
+                  cursor: canSubmit() && !submitting ? "pointer" : "not-allowed",
                   transition: "all .2s",
                   fontWeight: 500,
                   flex: "1 1 auto",
                   display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
                 }}>
-                <span>Pošalji prijavu</span>
-                <span className="mono" style={{ fontSize: 12, opacity: 0.7 }}>↵</span>
+                <span>{submitting ? "Šalje se..." : "Pošalji prijavu"}</span>
+                {!submitting && <span className="mono" style={{ fontSize: 12, opacity: 0.7 }}>↵</span>}
               </button>
-              <button type="button" onClick={onClose}
+              <button type="button" onClick={onClose} disabled={submitting}
                 style={{ padding: "16px 20px", fontSize: 13, color: "var(--mute)", textDecoration: "underline", textUnderlineOffset: 4 }}>
                 Odustani
               </button>
             </div>
+
+            {submitError && (
+              <p className="mono" style={{ fontSize: 11, color: "#c00", marginTop: 14, letterSpacing: "0.04em", lineHeight: 1.6 }}>
+                {submitError}
+              </p>
+            )}
           </form>
         ) : (
           <ConfirmationView code={confirmCode} game={game} teamName={teamName} players={players} onClose={onClose} />
@@ -269,7 +369,7 @@ function ConfirmationView({ code, game, teamName, players, onClose }) {
           Vidimo se<br/>na terenu.
         </h2>
         <p style={{ color: "var(--mute)", fontSize: 16, margin: 0, maxWidth: 420, lineHeight: 1.5 }}>
-          Tvoja prijava za <strong style={{ color: "var(--ink)" }}>{game.name}</strong> je zaprimljena. Potvrdu šaljemo na navedeni broj u sljedećih nekoliko minuta.
+          Tvoja prijava za <strong style={{ color: "var(--ink)" }}>{game.name}</strong> je zaprimljena. Potvrdu šaljemo na navedenu e-mail adresu.
         </p>
       </div>
 
@@ -280,6 +380,7 @@ function ConfirmationView({ code, game, teamName, players, onClose }) {
         <Row label={players.length > 1 ? "Igrači" : "Igrač"}>
           {players.map(p => p.name).filter(Boolean).join(", ")}
         </Row>
+        {players[0].email && <Row label="Kontakt">{players[0].email}</Row>}
         <Row label="Termin">{game.schedule} · {game.venue}</Row>
       </div>
 

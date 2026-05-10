@@ -32,6 +32,81 @@
 
   /* tweaks panel polish */
   .tweaks-host { font-family: "Inter", sans-serif; }
+
+  /* ── Responsive nav ── */
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .hamburger-btn { display: none; flex-direction: column; gap: 5px; background: none; border: 0; cursor: pointer; padding: 6px; }
+  .ham-line { display: block; width: 22px; height: 1.5px; background: #fff; transition: transform 0.25s ease, opacity 0.2s ease; transform-origin: center; }
+
+  /* ── Mobile full-screen menu ── */
+  .mobile-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: #000;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 40px;
+    animation: overlayFadeIn 0.2s ease;
+  }
+  .mobile-close-btn {
+    position: absolute; top: 14px; right: 24px;
+    display: flex; flex-direction: column; gap: 5px;
+    background: none; border: 0; cursor: pointer; padding: 6px;
+  }
+  .menu-stagger-link {
+    font-family: "Archivo Black", "Helvetica Neue", sans-serif;
+    font-size: clamp(42px, 14vw, 72px);
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    line-height: 1.15;
+    animation: menuItemIn 0.4s ease both;
+    transition: color 0.15s;
+  }
+  .menu-stagger-link:hover { color: rgba(255,255,255,0.45); }
+  .menu-stagger-date {
+    margin-top: 48px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    animation: menuItemIn 0.4s ease both;
+  }
+
+  @keyframes overlayFadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes menuItemIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 767px) {
+    .nav-links { display: none !important; }
+    .hamburger-btn { display: flex; }
+  }
+
+  /* ── Video section ── */
+  .video-card {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 64px;
+    align-items: start;
+    padding: 56px 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .video-player {
+    width: 320px; height: calc(320px * 16 / 9);
+    overflow: hidden; background: #111;
+    position: relative; cursor: pointer; flex-shrink: 0;
+  }
+  .video-desc { padding-top: 12px; }
+  @media (max-width: 860px) {
+    .video-card { grid-template-columns: 260px 1fr; gap: 40px; }
+    .video-player { width: 260px; height: calc(260px * 16 / 9); }
+  }
+  @media (max-width: 640px) {
+    .video-card { grid-template-columns: 1fr; gap: 20px; padding: 40px 0; }
+    .video-player { width: 100%; height: auto; aspect-ratio: 9 / 16; }
+    .video-desc { padding-top: 0; }
+  }
 </style>
 </head>
 <body>
@@ -41,9 +116,37 @@
   // host-protocol wiring + tweak defaults below
   window.__TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     "displayFont": "Archivo Black",
-    "festivalDate": "12.–14. lipnja 2026.",
+    "festivalDate": "14. lipnja 2026.",
     "festivalLocation": "Cvjetno naselje, Zagreb"
   }/*EDITMODE-END*/;
+</script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+  // ── Paste your Firebase config from: Firebase Console → Project Settings → Your apps ──
+  firebase.initializeApp({
+    apiKey:            "AIzaSyAl-soiyhpKeF6SbBu_8NbIyf_jY3XF2DE",
+    authDomain:        "dani-cvjetnog.firebaseapp.com",
+    projectId:         "dani-cvjetnog",
+    storageBucket:     "dani-cvjetnog.firebasestorage.app",
+    messagingSenderId: "973675887654",
+    appId:             "1:973675887654:web:1771de32bcc6e6b7a0bae7",
+    databaseURL:       "https://dani-cvjetnog-default-rtdb.europe-west1.firebasedatabase.app",
+  });
+
+  // ── EmailJS: create account at emailjs.com, make a template, paste IDs here ──
+  // Template variables used: {{to_name}}, {{to_email}}, {{igra}}, {{sifra}}, {{termin}}, {{lokacija}}, {{ekipa}}, {{igraci}}
+  window.__EMAILJS = {
+    publicKey:  "YOUR_EMAILJS_PUBLIC_KEY",   // Account → API Keys
+    serviceId:  "YOUR_SERVICE_ID",           // Email Services tab
+    templateId: "YOUR_TEMPLATE_ID",          // Email Templates tab
+  };
+  emailjs.init({ publicKey: window.__EMAILJS.publicKey });
 </script>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
