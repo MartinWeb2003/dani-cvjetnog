@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dani Cvjetnog — Prijava</title>
+<link rel="icon" type="image/png" href="uploads/domski-odbor-favicon.png">
+<title>Dani Cvjetnog · Prijava</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Anton&family=Fraunces:opsz,wght@9..144,400..900&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -107,6 +108,33 @@
     .video-player { width: 100%; height: auto; aspect-ratio: 9 / 16; }
     .video-desc { padding-top: 0; }
   }
+
+  /* ── Vidi što stiže header — true horizontal centering ── */
+  .vidi-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 16px;
+  }
+  .vidi-header-link {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+  @media (max-width: 640px) {
+    .vidi-header { grid-template-columns: 1fr; }
+    .vidi-header-link { justify-content: center; }
+  }
+
+  /* ── Hero logo decoration ── */
+  .hero-logo-spin {
+    transform-origin: 180px 180px;
+    animation: hero-spin 22s linear infinite;
+  }
+  @keyframes hero-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
@@ -116,7 +144,7 @@
   // host-protocol wiring + tweak defaults below
   window.__TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     "displayFont": "Archivo Black",
-    "festivalDate": "14. lipnja 2026.",
+    "festivalDate": "29. svibnja 2026.",
     "festivalLocation": "Cvjetno naselje, Zagreb"
   }/*EDITMODE-END*/;
 </script>
@@ -139,12 +167,11 @@
     databaseURL:       "https://dani-cvjetnog-default-rtdb.europe-west1.firebasedatabase.app",
   });
 
-  // ── EmailJS: create account at emailjs.com, make a template, paste IDs here ──
-  // Template variables used: {{to_name}}, {{to_email}}, {{igra}}, {{sifra}}, {{termin}}, {{lokacija}}, {{ekipa}}, {{igraci}}
+  // Template variables used: {{to_name}}, {{igra}}
   window.__EMAILJS = {
-    publicKey:  "YOUR_EMAILJS_PUBLIC_KEY",   // Account → API Keys
-    serviceId:  "YOUR_SERVICE_ID",           // Email Services tab
-    templateId: "YOUR_TEMPLATE_ID",          // Email Templates tab
+    publicKey:  "T7bhutkaDo7hziPCE",
+    serviceId:  "service_kyx5f5w",
+    templateId: "template_6ph0hpi",
   };
   emailjs.init({ publicKey: window.__EMAILJS.publicKey });
 </script>

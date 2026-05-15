@@ -107,14 +107,9 @@ function SignupForm({ game, onClose, onSubmit }) {
     const ejs = window.__EMAILJS;
     if (ejs && ejs.serviceId !== "YOUR_SERVICE_ID") {
       emailjs.send(ejs.serviceId, ejs.templateId, {
-        to_name:   players[0].name,
-        to_email:  players[0].email,
-        igra:      game.name,
-        sifra:     confirmCode,
-        termin:    game.schedule,
-        lokacija:  game.venue,
-        ekipa:     teamName || "",
-        igraci:    players.map(p => p.name).filter(Boolean).join(", "),
+        to_name:  players[0].name,
+        to_email: players[0].email,
+        igra:     game.name,
       }).catch((err) => console.error("EmailJS error:", err));
     }
 
@@ -187,10 +182,6 @@ function SignupForm({ game, onClose, onSubmit }) {
               <Tag>{game.schedule}</Tag>
               <Tag>{game.venue}</Tag>
             </div>
-
-            <p style={{ fontSize: 16, lineHeight: 1.5, color: "var(--mute)", margin: "0 0 36px", maxWidth: 480 }}>
-              {game.blurb} Ispuni podatke ispod — potvrdu prijave šaljemo na navedenu e-mail adresu.
-            </p>
 
             {isTeam && (
               <div style={{ marginBottom: 32 }}>

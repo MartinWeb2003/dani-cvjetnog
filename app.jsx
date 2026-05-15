@@ -73,7 +73,11 @@ function Header({ date }) {
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <DCMonogram />
+          <img
+            src="uploads/domski-odbor.png"
+            alt="Domski odbor Cvjetno"
+            style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", display: "block", border: "1px solid rgba(255,255,255,0.35)", flexShrink: 0 }}
+          />
           <span className="mono" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#fff" }}>
             Dani Cvjetnog · 26
           </span>
@@ -140,14 +144,6 @@ function MobileMenu({ date, onClose }) {
   );
 }
 
-function DCMonogram() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 28 28">
-      <circle cx="14" cy="14" r="13" fill="none" stroke="#fff" strokeWidth="1" />
-      <text x="14" y="18.5" textAnchor="middle" fontFamily="Archivo Black, sans-serif" fontSize="11" fill="#fff">DC</text>
-    </svg>
-  );
-}
 
 function headerFontFamily(displayFont) {
   if (displayFont === "Anton") return '"Anton", Impact, sans-serif';
@@ -155,16 +151,75 @@ function headerFontFamily(displayFont) {
   return '"Archivo Black", "Helvetica Neue", sans-serif';
 }
 
+function HeroLogoDecoration() {
+  return (
+    <div style={{
+      position: "absolute",
+      right: -55,
+      top: "50%",
+      transform: "translateY(-48%) rotate(-12deg)",
+      width: 360,
+      height: 360,
+      opacity: 0.22,
+      pointerEvents: "none",
+      zIndex: 0,
+    }}>
+      <svg
+        width="360" height="360" viewBox="0 0 360 360"
+        style={{ position: "absolute", inset: 0, overflow: "visible" }}
+        aria-hidden="true"
+      >
+        <defs>
+          <path id="hero-logo-ring" d="M180,180 m-160,0 a160,160 0 1,1 320,0 a160,160 0 1,1-320,0" />
+        </defs>
+        <g className="hero-logo-spin">
+          <text
+            fontFamily='"JetBrains Mono", ui-monospace, monospace'
+            fontSize="11"
+            letterSpacing="7"
+            fill="#000"
+          >
+            <textPath href="#hero-logo-ring">
+              DOMSKI ODBOR CVJETNO · DOMSKI ODBOR CVJETNO · DOMSKI ODBOR CVJETNO ·
+            </textPath>
+          </text>
+        </g>
+      </svg>
+      <div style={{
+        position: "absolute",
+        top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 224, height: 224,
+        borderRadius: "50%",
+        overflow: "hidden",
+        border: "1.5px solid rgba(0,0,0,0.25)",
+      }}>
+        <img
+          src="uploads/domski-odbor.png"
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function Hero({ date, location, displayFont }) {
   return (
     <section style={{
-      padding: "clamp(72px, 12vw, 120px) 24px clamp(64px, 8vw, 96px)",
-      maxWidth: 1100, margin: "0 auto",
+      paddingTop: "clamp(72px, 12vw, 120px)",
+      paddingBottom: "clamp(64px, 8vw, 96px)",
       borderBottom: "1px solid var(--line)",
+      position: "relative",
+      overflow: "hidden",
       textAlign: "center",
     }}>
-      <div className="mono" style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)", marginBottom: 36 }}>
-        Prijava na turnire · sezona 2026.
+      <HeroLogoDecoration />
+
+      <div style={{ position: "relative", zIndex: 1, padding: "0 24px", marginBottom: 36 }}>
+        <div className="mono" style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)" }}>
+          Prijava na turnire · sezona 2026.
+        </div>
       </div>
 
       <h1 style={{
@@ -173,29 +228,33 @@ function Hero({ date, location, displayFont }) {
         lineHeight: 0.86, margin: 0, fontWeight: 900,
         letterSpacing: "-0.025em",
         textTransform: "uppercase",
+        textAlign: "center",
+        position: "relative", zIndex: 1,
       }}>
         DANI<br/>CVJETNOG
       </h1>
 
-      <p style={{
-        fontFamily: "Inter, sans-serif", fontSize: "clamp(15px, 1.5vw, 19px)",
-        lineHeight: 1.6, maxWidth: 560, margin: "48px auto 0", color: "var(--ink)", fontWeight: 400,
-      }}>
-        Devet igara, osam paviljona, jedan dan. Skupi ekipu, izaberi disciplinu i prijavi se prije nego popune mjesta.
-      </p>
+      <div style={{ maxWidth: 560, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+        <p style={{
+          fontFamily: "Inter, sans-serif", fontSize: "clamp(15px, 1.5vw, 19px)",
+          lineHeight: 1.6, margin: "48px 0 0", color: "var(--ink)", fontWeight: 400,
+        }}>
+          Devet igara, osam paviljona, jedan dan. Skupi ekipu, izaberi disciplinu i prijavi se prije nego popune mjesta.
+        </p>
 
-      <div className="mono" style={{
-        fontSize: 11, letterSpacing: "0.16em", color: "var(--mute)",
-        textTransform: "uppercase", marginTop: 40,
-        display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap",
-      }}>
-        <span>{date}</span>
-        <span style={{ opacity: 0.4 }}>·</span>
-        <span>{location}</span>
-      </div>
+        <div className="mono" style={{
+          fontSize: 11, letterSpacing: "0.16em", color: "var(--mute)",
+          textTransform: "uppercase", marginTop: 40,
+          display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap",
+        }}>
+          <span>{date}</span>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <span>{location}</span>
+        </div>
 
-      <div className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink)", textTransform: "uppercase", marginTop: 56 }}>
-        ↓ Odaberi igru
+        <div className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink)", textTransform: "uppercase", marginTop: 56 }}>
+          ↓ Odaberi igru
+        </div>
       </div>
     </section>
   );
@@ -205,62 +264,66 @@ function VideoSection() {
   const videos = [
     {
       src: "uploads/video1.mp4",
+      igLink: "https://www.instagram.com/reel/DXo5LArDFx7/?igsh=d2QzbXVpcDMxejNu",
       title: "Dođi na Dane Cvjetnog",
-      description: "Cvita vas poziva na Dane Cvjetnog i otkriva kad se sve to događa. Jedan dan u Cvjetnom naselju, osam paviljona, devet igara i puno dobrih ekipa. Prijave su otvorene, mjesta su ograničena.",
+      description: "Cvita poziva u Cvjetno 29. svibnja, osam paviljona, devet igara, jedno mjesto gdje će biti gužva i biti će dobro. Prijave idu brzo, mjesta su ograničena pa nemoj čekati zadnji tren pa onda žaliti. Ekipa se skuplja, turniri se pune, a Cvita ne čeka nikoga.",
     },
     {
       src: "uploads/video2.mp4",
+      igLink: "https://www.instagram.com/reel/DYAQHYxMXl5/?igsh=MXJmcDRsanBtMGMwMA==",
       title: "Koliko paviljona?",
-      description: "Cvita izlazi na ulicu i pita prolaznike koliko paviljona ima Cvjetno. Tko pogodi točan broj, osvaja Dani Cvjetnog majicu. Odgovori su razni, smijeh je zagarantiran.",
+      description: "Ovo je možda naš omiljeni video. Cvita je izašla na ulicu i pitala prolaznike koliko paviljona ima Cvjetno, i odgovori su bili... zanimljivi. Ima svega, od onih koji su sigurni u krivi broj, do onih koji su rekli nešto sasvim slučajno točno. Tko pogodi osvaja majicu, a tko ne, dođe 29.5. pa vidi uživo.",
     },
   ];
 
   return (
     <section id="videi" style={{ borderBottom: "1px solid var(--line)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 24px 40px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ flex: 1, textAlign: "center" }}>
-            <h2 style={{
-              fontFamily: '"Archivo Black", "Helvetica Neue", sans-serif',
-              fontSize: "clamp(48px, 9vw, 120px)",
-              fontWeight: 900, lineHeight: 0.9, margin: 0,
-              letterSpacing: "-0.03em", textTransform: "uppercase",
-            }}>
-              Vidi što<br/>stiže
-            </h2>
+        <div className="vidi-header">
+          <div />
+          <h2 style={{
+            fontFamily: '"Archivo Black", "Helvetica Neue", sans-serif',
+            fontSize: "clamp(48px, 9vw, 120px)",
+            fontWeight: 900, lineHeight: 0.9, margin: 0,
+            letterSpacing: "-0.03em", textTransform: "uppercase",
+            textAlign: "center",
+          }}>
+            Vidi što<br/>stiže
+          </h2>
+          <div className="vidi-header-link">
+            <a
+              href="https://www.instagram.com/cvjetno.odbor?igsh=MXh5eXEwMnkxOGJtcQ=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mono"
+              style={{
+                fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
+                color: "var(--ink)", textDecoration: "none",
+                border: "1px solid var(--ink)", padding: "10px 16px",
+                display: "inline-flex", alignItems: "center", gap: 8,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="4.5"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              @cvjetno.odbor
+            </a>
           </div>
-          <a
-            href="https://www.instagram.com/cvjetno.odbor?igsh=MXh5eXEwMnkxOGJtcQ=="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mono"
-            style={{
-              fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
-              color: "var(--ink)", textDecoration: "none",
-              border: "1px solid var(--ink)", padding: "10px 16px",
-              display: "inline-flex", alignItems: "center", gap: 8,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5"/>
-              <circle cx="12" cy="12" r="4.5"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-            </svg>
-            @cvjetno.odbor
-          </a>
         </div>
       </div>
 
       <div style={{ padding: "0 24px 16px" }}>
         {videos.map((v, i) => (
-          <VideoCard key={i} {...v} number={i + 1} last={i === videos.length - 1} />
+          <VideoCard key={i} {...v} number={i + 1} last={i === videos.length - 1} igLink={v.igLink} />
         ))}
       </div>
     </section>
   );
 }
 
-function VideoCard({ src, title, description, number, last }) {
+function VideoCard({ src, title, description, igLink, number, last }) {
   const videoRef = useAppRef(null);
   const barRef = useAppRef(null);
   const [playing, setPlaying] = useAppState(false);
@@ -387,9 +450,30 @@ function VideoCard({ src, title, description, number, last }) {
         }}>
           {title}
         </h3>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--mute)", margin: 0 }}>
+        <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--mute)", margin: "0 0 20px" }}>
           {description}
         </p>
+        {igLink && (
+          <a
+            href={igLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mono"
+            style={{
+              fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
+              color: "#fff", textDecoration: "none",
+              background: "#000", padding: "10px 16px",
+              display: "inline-flex", alignItems: "center", gap: 8,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            Pogledaj na Instagramu
+          </a>
+        )}
       </div>
     </div>
   );
@@ -403,7 +487,7 @@ function GameGrid({ onPick, displayFont }) {
         textAlign: "center",
         padding: "20px 24px 32px", borderBottom: "1px solid var(--line)", marginBottom: 0,
       }}>
-        <h2 className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mute)", margin: 0, fontWeight: 400 }}>
+        <h2 className="mono" style={{ fontSize: 17, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)", margin: 0, fontWeight: 700 }}>
           Discipline · 09
         </h2>
       </div>
@@ -423,7 +507,6 @@ function GameGrid({ onPick, displayFont }) {
 
       <div style={{ marginTop: 48, textAlign: "center", padding: "0 24px" }}>
         <p className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--mute)", margin: 0, lineHeight: 1.9, textTransform: "uppercase" }}>
-          Prijave se zatvaraju četvrtak u 22:00.<br/>
           Za promjene kontaktiraj odbor · <a href="mailto:domski.cvjetno@gmail.com" style={{ color: "var(--ink)" }}>domski.cvjetno@gmail.com</a>
         </p>
       </div>
@@ -506,7 +589,7 @@ function Footer() {
     }}>
       <div className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--mute)", lineHeight: 2 }}>
         © 2026 Cvjetni Odbor<br/>
-        Sve igre, sva prava igračima
+        Vidimo se :)
       </div>
     </footer>
   );
