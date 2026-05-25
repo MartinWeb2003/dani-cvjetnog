@@ -28,6 +28,7 @@ function App() {
     <div data-screen-label="01 Landing">
       <Header date={tweaks.festivalDate} />
       <Hero date={tweaks.festivalDate} location={tweaks.festivalLocation} displayFont={tweaks.displayFont} />
+      <PrizeBanner />
       <VideoSection />
       <GameGrid onPick={setActiveGame} displayFont={tweaks.displayFont} />
       <Footer />
@@ -252,9 +253,46 @@ function Hero({ date, location, displayFont }) {
           <span>{location}</span>
         </div>
 
-        <div className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink)", textTransform: "uppercase", marginTop: 56 }}>
+        <a href="#igre" className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink)", textTransform: "uppercase", marginTop: 56, display: "inline-block", textDecoration: "none" }}>
           ↓ Odaberi igru
-        </div>
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function PrizeBanner() {
+  return (
+    <section style={{
+      background: "#000",
+      color: "#fff",
+      padding: "clamp(48px, 7vw, 80px) 24px",
+      textAlign: "center",
+      borderBottom: "1px solid #222",
+    }}>
+      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        <p style={{
+          fontFamily: '"Archivo Black", "Helvetica Neue", sans-serif',
+          fontSize: "clamp(32px, 6vw, 80px)",
+          fontWeight: 900,
+          lineHeight: 1.1,
+          letterSpacing: "-0.02em",
+          textTransform: "uppercase",
+          margin: 0,
+        }}>
+          Top 3 dobivaju<br />Dani Cvjetnog majicu :)
+        </p>
+        <p style={{
+          fontFamily: '"Inter", system-ui, sans-serif',
+          fontSize: "clamp(13px, 1.8vw, 18px)",
+          fontWeight: 400,
+          color: "rgba(255,255,255,0.55)",
+          marginTop: "clamp(16px, 2vw, 24px)",
+          marginBottom: 0,
+          letterSpacing: "0.01em",
+        }}>
+          u svakoj igri posebno<br />+ ostale nagrade: boca u Zagsu, ulaznice i više
+        </p>
       </div>
     </section>
   );
