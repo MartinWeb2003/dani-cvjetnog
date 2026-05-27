@@ -1,3 +1,5 @@
 prijave_export/
 serviceAccount.json
 export_prijave.py
+drive_credentials.json
+drive_token.json

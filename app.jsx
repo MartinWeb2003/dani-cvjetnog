@@ -262,14 +262,52 @@ function Hero({ date, location, displayFont }) {
 }
 
 function PrizeBanner() {
+  const sectionRef = useAppRef(null);
+  const [progress, setProgress] = useAppState(0);
+
+  useAppEffect(() => {
+    const onScroll = () => {
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const wh = window.innerHeight;
+      const p = Math.max(0, Math.min(1, (wh - rect.top) / (rect.height + wh * 0.5)));
+      setProgress(p);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const rotate1 = -10 - progress * 12;
+  const rotate2 =  10 + progress * 12;
+  const ty      = (1 - Math.min(1, progress * 1.8)) * 80;
+  const scale   = 0.72 + Math.min(1, progress * 1.4) * 0.28;
+  const opacity = Math.min(1, progress * 2.2);
+
+  const shirtStyle = (rotate) => ({
+    width: "clamp(130px, 22vw, 260px)",
+    height: "auto",
+    display: "block",
+    transform: `translateY(${ty}px) rotate(${rotate}deg) scale(${scale})`,
+    opacity,
+    transformOrigin: "bottom center",
+    userSelect: "none",
+    willChange: "transform, opacity",
+    filter: "drop-shadow(0 12px 40px rgba(255,255,255,0.12))",
+  });
+
   return (
-    <section style={{
-      background: "#000",
-      color: "#fff",
-      padding: "clamp(48px, 7vw, 80px) 24px",
-      textAlign: "center",
-      borderBottom: "1px solid #222",
-    }}>
+    <section
+      ref={sectionRef}
+      style={{
+        background: "#000",
+        color: "#fff",
+        padding: "clamp(48px, 7vw, 80px) 24px clamp(24px, 4vw, 48px)",
+        textAlign: "center",
+        borderBottom: "1px solid #222",
+      }}
+    >
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <p style={{
           fontFamily: '"Archivo Black", "Helvetica Neue", sans-serif',
@@ -293,6 +331,28 @@ function PrizeBanner() {
         }}>
           u svakoj igri posebno<br />+ ostale nagrade: boca u Zagsu, ulaznice i više
         </p>
+
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-end",
+          gap: "clamp(8px, 4vw, 48px)",
+          marginTop: "clamp(32px, 5vw, 64px)",
+          paddingBottom: "clamp(8px, 3vw, 32px)",
+        }}>
+          <img
+            src="uploads/shirt1.png"
+            alt="Majica – prednja strana"
+            draggable="false"
+            style={shirtStyle(rotate1)}
+          />
+          <img
+            src="uploads/shirt2.png"
+            alt="Majica – stražnja strana"
+            draggable="false"
+            style={shirtStyle(rotate2)}
+          />
+        </div>
       </div>
     </section>
   );
