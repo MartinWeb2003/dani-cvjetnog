@@ -161,6 +161,54 @@ function SignupForm({ game, onClose, onSubmit }) {
           <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1 L11 11 M11 1 L1 11" stroke="currentColor" strokeWidth="1.2"/></svg>
         </button>
 
+        {/* ── Prijave zatvorene overlay ── */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 4,
+          background: "rgba(247,245,240,0.90)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          gap: 20, padding: "0 40px",
+          textAlign: "center",
+        }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%",
+            border: "1px solid var(--ink)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h2 style={{
+            fontFamily: '"Archivo Black", "Helvetica Neue", sans-serif',
+            fontSize: "clamp(40px, 7vw, 64px)",
+            fontWeight: 900, lineHeight: 0.92, margin: 0,
+            letterSpacing: "-0.025em", textTransform: "uppercase",
+          }}>
+            Prijave<br/>zatvorene
+          </h2>
+          <p style={{
+            fontFamily: '"Inter", sans-serif',
+            fontSize: 14, color: "var(--mute)",
+            margin: 0, maxWidth: 300, lineHeight: 1.65,
+          }}>
+            Prijave za <strong style={{ color: "var(--ink)" }}>{game.name}</strong> su zatvorene. Hvala svima koji su se prijavili — vidimo se na terenu!
+          </p>
+          <button onClick={onClose} style={{
+            marginTop: 8,
+            fontFamily: '"Inter", sans-serif',
+            fontSize: 13, letterSpacing: "0.04em",
+            border: "1px solid var(--ink)", padding: "12px 28px",
+            background: "var(--ink)", color: "var(--paper)",
+            cursor: "pointer",
+          }}>
+            Zatvori
+          </button>
+        </div>
+
         {!submitted ? (
           <form onSubmit={handleSubmit} className="signup-form-inner" style={{ padding: "56px 56px 80px" }}>
             <div className="mono" style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--mute)", marginBottom: 24 }}>
